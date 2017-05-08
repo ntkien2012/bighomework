@@ -6,7 +6,8 @@
 #define __MAX_LEN 50
 
 typedef struct Book book;
-struct Book{
+struct Book
+{
 	char ISBN[14];
 	char Author[__MAX_SIZE];
 	char Title[__MAX_SIZE];
@@ -14,25 +15,28 @@ struct Book{
 	int Free;
 };
 
-// typedef struct Student student;
-// struct Student{
-	// char Student_Code[6];			
-	// char Family_Name[__MAX_SIZE];
-	// char Name[__MAX_SIZE];
-	// char Father_Name[__MAX_SIZE];
-	// char Faculty[2];
-	// char Speciality[__MAX_SIZE];
-// };
+typedef struct Student student;
+struct Student
+{
+	char Student_Code[6];			
+	char Family_Name[__MAX_SIZE];
+	char Name[__MAX_SIZE];
+	char Father_Name[__MAX_SIZE];
+	char Faculty[2];
+	char Speciality[__MAX_SIZE];
+};
 
 book Books[__MAX_LEN];
-//student Students[__MAX_LEN];
+student Students[__MAX_LEN];
 
 int readBook(const char *filename); 
+
+int readStudent(const char *filename);
 
 int main(int argc, char **argv)
 {
 	int n = readBook(argv[1]);	
-	
+	int m = readStudent(argv[2]);
 	return 0;
 }
 
@@ -55,8 +59,7 @@ int readBook(const char *filename)
 			Books[total].ISBN[j] = tmp[j + 1];
 		}
 		Books[total].ISBN[13] = '\0';
-//		printf("%s\n", Books[total].ISBN);
-//		printf("%c\n", tmp[15]);
+		
 		//Author
 		int count_to_author = 15;
 		for (j = 15; tmp[j] != ';'; j++)
@@ -65,7 +68,7 @@ int readBook(const char *filename)
 			count_to_author++;
 		}
 		Books[total].Author[count_to_author - 14] = '\0';
-//		printf("%s\n", Books[total].Author);
+		
 		//Title
 		int count_to_title = count_to_author + 1;
 		for (j = count_to_author + 1; tmp[j] != ';'; j++)
@@ -73,7 +76,7 @@ int readBook(const char *filename)
 			Books[total].Title[j - count_to_author - 1] = tmp[j];
 			count_to_title++;
 		}
-//		printf("%s\n", Books[total].Title);
+		
 		//All
 		char number_all[__MAX_SIZE];
 		int count_to_all = count_to_title + 1;
@@ -82,17 +85,28 @@ int readBook(const char *filename)
 			number_all[j - count_to_title - 1] = tmp[j];
 			count_to_all++;
 		}
-		Books[total].All = 0;
-		int number = 0;
-		for (j = count_to_all - count_to_title - 1; j >= 1; j--)
+		//count_to_all - count_to_title - 1 la so luong so trong All
+		int z = count_to_all - count_to_title - 1;
+		for (j = 0; j < count_to_all - count_to_title - 1; j++)
 		{
-			Books[total].All += number_all[number] * pow(10, j - 1);
-			printf("%d\n", Books[total].All);
-			number++;
+			Books[total].All += ((int)number_all[j] - 48) * pow(10,(z - 1));
+			z--;
 		}
-//		printf("%d\n", Books[total].All);
-		printf("\n");
+
+		//Free
+		char number_free[__MAX_SIZE];
+		int count_to_free = count_to_all + 1;
+		for (j = count_to_free; tmp[j] != '"'; j++)
+		{
+			number_free[j - count_to_all - 1] = tmp[j];
+			count_to_free++;
+		}
+		int y = count_to_free - count_to_all -1;
+		for (j = 0; j < count_to_free - count_to_all - 1; j++)
+		{
+			Books[total].Free += ((int)number_free[j] -48) * pow(10, (y - 1));
+			y--;
+		}
 		total++;
-		
 	}
 }
