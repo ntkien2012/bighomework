@@ -15,28 +15,22 @@ struct Book
 	int Free;
 };
 
-typedef struct Student student;
-struct Student
-{
-	char Student_Code[6];			
-	char Family_Name[__MAX_SIZE];
-	char Name[__MAX_SIZE];
-	char Father_Name[__MAX_SIZE];
-	char Faculty[2];
-	char Speciality[__MAX_SIZE];
-};
-
 book Books[__MAX_LEN];
-student Students[__MAX_LEN];
 
 int readBook(const char *filename); 
 
-int readStudent(const char *filename);
+int comparingISBN(char a[14]);
+
+void addingNewBook(const char *filename);
+
+void searchingBook(const char *filename);
 
 int main(int argc, char **argv)
 {
-	int n = readBook(argv[1]);	
-	int m = readStudent(argv[2]);
+	//Adding
+//	int n = readBook("book.csv");
+//	addingNewBook("book.csv");
+	searchingBook("book.csv");
 	return 0;
 }
 
@@ -50,63 +44,82 @@ int readBook(const char *filename)
 	rewind(fs);
 	char tmp[__MAX_SIZE];
 	int total = 0;
-	int j;
+	int i;
 	while(fgets(tmp, __MAX_SIZE, fs))
 	{
-		//ISBN
-		for (j = 0; j < 13; j++)
+		for (i = 0; i < 13; i++)
 		{
-			Books[total].ISBN[j] = tmp[j + 1];
+			Books[total].ISBN[i] = tmp[i];
 		}
 		Books[total].ISBN[13] = '\0';
-		
-		//Author
-		int count_to_author = 15;
-		for (j = 15; tmp[j] != ';'; j++)
-		{
-			Books[total].Author[j - 15] = tmp[j];
-			count_to_author++;
-		}
-		Books[total].Author[count_to_author - 14] = '\0';
-		
-		//Title
-		int count_to_title = count_to_author + 1;
-		for (j = count_to_author + 1; tmp[j] != ';'; j++)
-		{
-			Books[total].Title[j - count_to_author - 1] = tmp[j];
-			count_to_title++;
-		}
-		
-		//All
-		char number_all[__MAX_SIZE];
-		int count_to_all = count_to_title + 1;
-		for (j = count_to_title + 1; tmp[j] != ';'; j++)
-		{
-			number_all[j - count_to_title - 1] = tmp[j];
-			count_to_all++;
-		}
-		//count_to_all - count_to_title - 1 la so luong so trong All
-		int z = count_to_all - count_to_title - 1;
-		for (j = 0; j < count_to_all - count_to_title - 1; j++)
-		{
-			Books[total].All += ((int)number_all[j] - 48) * pow(10,(z - 1));
-			z--;
-		}
-
-		//Free
-		char number_free[__MAX_SIZE];
-		int count_to_free = count_to_all + 1;
-		for (j = count_to_free; tmp[j] != '"'; j++)
-		{
-			number_free[j - count_to_all - 1] = tmp[j];
-			count_to_free++;
-		}
-		int y = count_to_free - count_to_all -1;
-		for (j = 0; j < count_to_free - count_to_all - 1; j++)
-		{
-			Books[total].Free += ((int)number_free[j] -48) * pow(10, (y - 1));
-			y--;
-		}
 		total++;
 	}
+	return total;
+}
+
+
+//Adding
+int comparingISBN(char a[14]) //compare which new ISBN existed or not
+{
+	int i;
+	int temp = -1;
+	for (i = 0; i < readBook("book.csv"); i++)
+	{
+		if(strcmp(a, Books[i].ISBN) == 0)
+			temp = i;
+	}
+	return temp;
+}
+
+void addingNewBook(const char *filename)
+{
+	FILE * fs = fopen(filename, "a+");
+	book newbook;
+	
+	printf("\nISBN: ");
+	gets(newbook.ISBN);
+	if (comparingISBN(newbook.ISBN) != -1)
+		fclose(fs);
+	else 
+	{
+		printf("\nAuthor's name: ");
+		gets(newbook.Author);
+		printf("\nBook's title: ");
+		gets(newbook.Title);
+		printf("\nAll: ");
+		scanf("%d", &newbook.All);
+		printf("\nFree: ");
+		scanf("%d", &newbook.Free);
+	
+		fprintf(fs, "%s, %s, %s, %d, %d\n", newbook.ISBN, newbook.Author, newbook.Title, newbook.All, newbook.Free);
+		fclose(fs);
+	}
+}
+
+//Searching
+
+void searchingBook(const char *filename)
+{
+	FILE * fs = fopen(filename, "r");
+	char searchitem[14];
+	
+	printf("\nISBN: ");
+	gets(searchitem);
+	printf("%d", comparingISBN(searchitem));
+	// if(comparingISBN(searchitem) == -1)
+		// fclose(fs);
+	// else
+	// {
+		// rewind(fs);
+		// char tmp[__MAX_SIZE];
+		// int total = 0;
+		// int j;
+		// while(fgets(tmp, __MAX_SIZE, fs))
+		// {
+			// total++;
+		// }
+		// printf("%s", tmp[comparingISBN(searchitem)]);
+		// fclose(fs);
+	// }
+	
 }
