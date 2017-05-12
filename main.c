@@ -103,23 +103,23 @@ void searchingBook(const char *filename)
 	FILE * fs = fopen(filename, "r");
 	char searchitem[14];
 	
+	rewind(fs);
 	printf("\nISBN: ");
 	gets(searchitem);
-	printf("%d", comparingISBN(searchitem));
-	// if(comparingISBN(searchitem) == -1)
-		// fclose(fs);
-	// else
-	// {
-		// rewind(fs);
-		// char tmp[__MAX_SIZE];
-		// int total = 0;
-		// int j;
-		// while(fgets(tmp, __MAX_SIZE, fs))
-		// {
-			// total++;
-		// }
-		// printf("%s", tmp[comparingISBN(searchitem)]);
-		// fclose(fs);
-	// }
 	
+	if(comparingISBN(searchitem) == -1)
+		fclose(fs);
+	else
+	{
+		char tmp[__MAX_SIZE];
+		int total = 0;
+		int j;
+		while(total <= comparingISBN(searchitem)) //Loop from 0 to where can he find this index
+		{
+			fgets(tmp, __MAX_SIZE, fs);
+			total++;
+		}
+		printf("%s", tmp);
+		fclose(fs);
+	}
 }
