@@ -28,13 +28,52 @@ void searchingBook(const char *filename);
 void deletingBook(const char *filename);
 
 void editingBook(const char *filename);
+
 int main(int argc, char **argv)
 {
 	int n = readBook("book.csv");
-//	addingNewBook("book.csv");
-//	searchingBook("book.csv");
-//	deletingBook("book.csv");
-//	editingBook("book.csv");
+	if (n == -1)
+	{
+		printf("ERROR #1: empty file");
+		return -1;
+	}
+	else
+	{
+		int part_1;
+		printf("MENU:");
+		printf("\n1) Add");
+		printf("\n2) Delete");
+		printf("\n3) Search");
+		printf("\n4) Edit");
+		printf("\nYou want:");
+		scanf("%d", &part_1);
+		fflush(stdin);
+		switch(part_1)
+		{
+			case 1:
+			{
+				addingNewBook("book.csv");
+				break;
+			}
+			case 2:
+			{
+				deletingBook("book.csv");
+				break;				
+			}
+			case 3:
+			{
+				searchingBook("book.csv");
+				break;
+			}
+			case 4:
+			{
+				editingBook("book.csv");
+				break;
+			}
+			default:;
+		}
+	}
+
 }
 
 int readBook(const char *filename)
@@ -74,7 +113,7 @@ void addingNewBook(const char *filename)
 	FILE * fs = fopen(filename, "a+");
 	book newbook;
 	
-	printf("\nISBN:");
+	printf("ISBN:");
 	gets(newbook.ISBN);
 	if (comparingISBN(newbook.ISBN) != -1)
 		fclose(fs);
@@ -101,7 +140,7 @@ void searchingBook(const char *filename)
 	char searchitem[14];
 	
 	rewind(fs);
-	printf("\nISBN:");
+	printf("ISBN:");
 	gets(searchitem);
 	
 	if(comparingISBN(searchitem) == -1)
@@ -126,7 +165,7 @@ void deletingBook(const char *filename)
 {
 	FILE *fs;
 	char deleteitem[__MAX_SIZE];
-	printf("\nISBN:");
+	printf("ISBN:");
 	gets(deleteitem);
 	
 	fs = fopen(filename, "r");
