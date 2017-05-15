@@ -3,7 +3,6 @@
 #include <string.h>
 #include <math.h>
 #define __MAX_SIZE 256
-#define __MAX_LEN 50
 
 typedef struct Book book;
 struct Book
@@ -15,7 +14,22 @@ struct Book
 	int Free;
 };
 
-book Books[__MAX_LEN];
+typedef struct User user;
+struct User
+{
+	char Username[__MAX_SIZE];
+	char Password[__MAX_SIZE];
+	int ADbook;
+	int ADstudent;
+};
+
+book Books[__MAX_SIZE];
+
+user Users[__MAX_SIZE];
+
+
+//Part: Book
+void part_1();
 
 int readBook(const char *filename); 
 
@@ -29,26 +43,36 @@ void deletingBook(const char *filename);
 
 void editingBook(const char *filename);
 
+
+//Part: User
+int readUser(const char *filename);
+
 int main(int argc, char **argv)
+{
+//	part_1();
+	return 0;
+}
+
+void part_1()
 {
 	int n = readBook("book.csv");
 	if (n == -1)
 	{
 		printf("ERROR #1: empty file");
-		return -1;
 	}
 	else
 	{
-		int part_1;
+		int x;
 		printf("MENU:");
 		printf("\n1) Add");
 		printf("\n2) Delete");
 		printf("\n3) Search");
 		printf("\n4) Edit");
+		
 		printf("\nYou want:");
-		scanf("%d", &part_1);
+		scanf("%d", &x);
 		fflush(stdin);
-		switch(part_1)
+		switch(x)
 		{
 			case 1:
 			{
@@ -73,7 +97,6 @@ int main(int argc, char **argv)
 			default:;
 		}
 	}
-
 }
 
 int readBook(const char *filename)
@@ -143,19 +166,13 @@ void searchingBook(const char *filename)
 	printf("ISBN:");
 	gets(searchitem);
 	
-	if(comparingISBN(searchitem) == -1)
+	int n = comparingISBN(searchitem);
+	
+	if(n == -1)
 		fclose(fs);
 	else
 	{
-		char tmp[__MAX_SIZE];
-		int total = 0;
-		int j;
-		while(total <= comparingISBN(searchitem)) //Loop from 0 to where can he find this index
-		{
-			fgets(tmp, __MAX_SIZE, fs);
-			total++;
-		}
-		printf("%s", tmp);
+		printf("%s, %s, %s, %d, %d\n", Books[n].ISBN, Books[n].Author, Books[n].Title, Books[n].All, Books[n].Free);
 		fclose(fs);
 	}
 }
