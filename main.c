@@ -47,9 +47,12 @@ void editingBook(const char *filename);
 //Part: User
 int readUser(const char *filename);
 
+int checkUser(const char *filename);
+
 int main(int argc, char **argv)
 {
 //	part_1();
+	int n = readUser("user.csv");
 	return 0;
 }
 
@@ -109,7 +112,6 @@ int readBook(const char *filename)
 	rewind(fs);
 	char tmp[__MAX_SIZE];
 	int total = 0;
-	int i;
 	while(fgets(tmp, __MAX_SIZE, fs))
 	{
 		fscanf(fs, "%[^,], %[^,], %[^,], %d , %d", Books[total].ISBN, Books[total].Author, Books[total].Title, &Books[total].All, &Books[total].Free);
@@ -243,3 +245,22 @@ void editingBook(const char *filename)
 	else
 		printf(" ");
 }
+
+int readUser(const char *filename)
+{
+	FILE *fs = fopen(filename, "r+");
+	if(!fs)
+		return -1;
+	
+	//Read file
+	rewind(fs);
+	char tmp[__MAX_SIZE];
+	int total = 0;
+	while (fgets(tmp, __MAX_SIZE, fs))
+	{
+		fscanf(fs, "%[^,], %[^,], %d , %d", Users[total].Username, Users[total].Password, &Users[total].ADbook, &Users[total].ADstudent);
+		total++;
+	}
+	return total;
+}
+
