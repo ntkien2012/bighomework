@@ -61,13 +61,15 @@ void editingStudent(const char *filename);
 void searchingStudent(const char *filename);
 
 //Part: User
+void part_2_user();
 int readUser(const char *filename);
 int checkUser(const char *filename);
 
 int main(int argc, char **argv)
 {
-	part_1_book();
+//	part_1_book();
 //	part_1_student();
+	part_2_user();
 	return 0;
 }
 
@@ -86,6 +88,7 @@ void part_1_book()
 		printf("\n2) Delete");
 		printf("\n3) Search");
 		printf("\n4) Show");
+		printf("\n5) Esc");
 		
 		printf("\nYou want:");
 		scanf("%d", &x);
@@ -112,6 +115,10 @@ void part_1_book()
 				sortingBook("book.csv");
 				break;
 			}
+			case 5:
+			{
+				break;
+			}
 			default:;
 		}
 	}
@@ -132,6 +139,7 @@ void part_1_student()
 		printf("\n2) Delete");
 		printf("\n3) Edit");
 		printf("\n4) Search");
+		printf("\n5) Esc");
 		
 		printf("\nYou want:");
 		scanf("%d", &x);
@@ -157,6 +165,44 @@ void part_1_student()
 			{
 				editingStudent("student.csv");
 				break;
+			}
+			case 5:
+			{
+				break;
+			}
+			default:;
+		}
+	}
+}
+
+void part_2_user()
+{
+	int n = readUser("user.csv");
+	if (n == -1)
+	{
+		printf("ERROR #1: empty file");
+	}
+	else
+	{
+		int x;
+		printf("MENU:");
+		printf("\n1) Book");
+		printf("\n2) Student");
+		
+		printf("\nYou want:");
+		scanf("%d", &x);
+		fflush(stdin);
+		switch(x)
+		{
+			case 1:
+			{
+				part_1_book();
+				break;
+			}
+			case 2:
+			{
+				part_1_student();
+				break;				
 			}
 			default:;
 		}
