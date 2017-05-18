@@ -38,24 +38,27 @@ book Books[__MAX_SIZE];
 student Students[__MAX_SIZE];
 user Users[__MAX_SIZE];
 
+void swap(int *, int *);
+void strswap(char a[], char b[]);
 
 //Part: Book
-void part_1();
+void part_1_book();
 int readBook(const char *filename); 
 int comparingISBN(char a[14]);
 void addingNewBook(const char *filename);
 void searchingBook(const char *filename);
 void deletingBook(const char *filename);
-void editingBook(const char *filename);
+void sortingBook(const char *filename);
 
 
 //Part: Student
+void part_1_student();
 int readStudent(const char *filename);
 int comparingID(char a[7]);
 void addingNewStudent(const char *filename);
 void deletingStudent(const char *filename);
 void editingStudent(const char *filename);
-
+void searchingStudent(const char *filename);
 
 //Part: User
 int readUser(const char *filename);
@@ -63,16 +66,12 @@ int checkUser(const char *filename);
 
 int main(int argc, char **argv)
 {
-//	part_1();
-//	int n = readUser("user.csv");
-//	int n = readStudent("student.csv");
-//	int n = readBook("book.csv");
-//	deletingStudent("student.csv");
-	editingStudent("student.csv");
+	part_1_book();
+//	part_1_student();
 	return 0;
 }
 
-void part_1()
+void part_1_book()
 {
 	int n = readBook("book.csv");
 	if (n == -1)
@@ -86,7 +85,7 @@ void part_1()
 		printf("\n1) Add");
 		printf("\n2) Delete");
 		printf("\n3) Search");
-		printf("\n4) Edit");
+		printf("\n4) Show");
 		
 		printf("\nYou want:");
 		scanf("%d", &x);
@@ -110,7 +109,53 @@ void part_1()
 			}
 			case 4:
 			{
-				editingBook("book.csv");
+				sortingBook("book.csv");
+				break;
+			}
+			default:;
+		}
+	}
+}
+
+void part_1_student()
+{
+	int n = readStudent("student.csv");
+	if (n == -1)
+	{
+		printf("ERROR #1: empty file");
+	}
+	else
+	{
+		int x;
+		printf("MENU:");
+		printf("\n1) Add");
+		printf("\n2) Delete");
+		printf("\n3) Edit");
+		printf("\n4) Search");
+		
+		printf("\nYou want:");
+		scanf("%d", &x);
+		fflush(stdin);
+		switch(x)
+		{
+			case 1:
+			{
+				addingNewStudent("student.csv");
+				break;
+			}
+			case 2:
+			{
+				deletingStudent("student.csv");
+				break;				
+			}
+			case 3:
+			{
+				searchingStudent("student.csv");
+				break;
+			}
+			case 4:
+			{
+				editingStudent("student.csv");
 				break;
 			}
 			default:;
@@ -131,7 +176,6 @@ int readBook(const char *filename)
 	while(fgets(tmp, __MAX_SIZE, fs))
 	{
 		fscanf(fs, "%[^,], %[^,], %[^,], %d , %d", Books[total].ISBN, Books[total].Author, Books[total].Title, &Books[total].All, &Books[total].Free);
-		printf("%s %s %s %d %d\n", Books[total].ISBN, Books[total].Author, Books[total].Title, Books[total].All, Books[total].Free);
 		total++;
 	}
 	return total;
@@ -226,41 +270,44 @@ void deletingBook(const char *filename)
 }
 
 //Edit
-void editingBook(const char *filename)
+
+void swap(int *a, int *b)
 {
-	FILE *fs;
-	book edititem;
-	printf("\nISBN:");
-	gets(edititem.ISBN);
-	
-	fs = fopen(filename, "r");
-	rewind(fs);
-	int k = comparingISBN(edititem.ISBN); 
-	int n = readBook(filename);
-	fclose(fs);
-	if (k != -1)
+	int temp;
+	temp = *b;
+	*b = *a;
+	*a = temp;
+}
+
+void strswap(char a[], char b[])
+{
+	char tmp[__MAX_SIZE];
+	strcpy(tmp, b);
+	strcpy(b, a);
+	strcpy(a, tmp);
+}
+
+void sortingBook(const char *filename)
+{
+	FILE *fs = fopen(filename, "r");
+	int i, j;
+	int n = readBook("book.csv");
+	for (i = 0; i < n; i++)
 	{
-		printf("\nAuthor's name:");
-		gets(edititem.Author);
-		printf("\nBook's title:");
-		gets(edititem.Title);
-		printf("\nAll:");
-		scanf("%d", &edititem.All);
-		printf("\nFree:");
-		scanf("%d", &edititem.Free);
-		fs = fopen(filename, "w");
-		int i;
-		for (i = 0; i < n; i++)
+		for (j = i + 1; j< n; j++)
 		{
-			if (i != k)
-				//printf("%s, %s, %s, %d, %d\n", Books[i].ISBN, Books[i].Author, Books[i].Title, Books[i].All, Books[i].Free);
-				fprintf(fs, "%s, %s, %s, %d, %d\n", Books[i].ISBN, Books[i].Author, Books[i].Title, Books[i].All, Books[i].Free);
+			if (strcmp(Books[i].ISBN, Books[j].ISBN) < 0)
+			{
+				strswap(Books[i].ISBN, Books[j].ISBN);
+				strswap(Books[i].Author, Books[j].Author);
+				strswap(Books[i].Title, Books[j].Title);
+				swap(&Books[i].All, &Books[j].All);
+				swap(&Books[i].Free, &Books[j].Free);
+			}
 		}
-		fprintf(fs, "%s, %s, %s, %d, %d\n", edititem.ISBN, edititem.Author, edititem.Title, edititem.All, edititem.Free);
-		fclose(fs);
 	}
-	else
-		printf(" ");
+	for (i = 0; i < n; i++)
+		printf("%s | %s | %s | %d | %d\n", Books[i].ISBN, Books[i].Author, Books[i].Title, Books[i].All, Books[i].Free);
 }
 
 int readUser(const char *filename)
@@ -405,4 +452,25 @@ void editingStudent(const char *filename)
 	}
 	else
 		printf(" ");
+}
+
+//Search
+void searchingStudent(const char *filename)
+{
+	FILE * fs = fopen(filename, "r");
+	char searchitem[7];
+	
+	rewind(fs);
+	printf("ID:");
+	gets(searchitem);
+	
+	int n = comparingID(searchitem);
+	
+	if(n == -1)
+		fclose(fs);
+	else
+	{
+		printf("%s, %s, %s, %s, %s, %s\n", Students[n].ID, Students[n].FamilyName, Students[n].Name, Students[n].FatherName, Students[n].Faculty, Students[n].Specialist);
+		fclose(fs);
+	}
 }
