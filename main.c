@@ -37,6 +37,7 @@ struct User
 book Books[__MAX_SIZE];
 student Students[__MAX_SIZE];
 user Users[__MAX_SIZE];
+int check;
 
 void swap(int *, int *);
 void strswap(char a[], char b[]);
@@ -67,11 +68,11 @@ int checkUser(const char *filename);
 
 int main(int argc, char **argv)
 {
-//	part_1_book();
-//	part_1_student();
+	check = checkUser("user.csv");
 	part_2_user();
 	return 0;
 }
+
 
 void part_1_book()
 {
@@ -83,7 +84,8 @@ void part_1_book()
 	else
 	{
 		int x;
-		printf("MENU:");
+		printf("MENU BOOK:");
+		printf("\n0) Main Menu");
 		printf("\n1) Add");
 		printf("\n2) Delete");
 		printf("\n3) Search");
@@ -95,15 +97,36 @@ void part_1_book()
 		fflush(stdin);
 		switch(x)
 		{
+			case 0:
+			{
+				part_2_user();
+				break;
+			}
 			case 1:
 			{
-				addingNewBook("book.csv");
-				break;
+				if (Users[check].ADbook == 1)
+				{	
+					addingNewBook("book.csv");
+					break;
+				}
+				else
+				{
+					printf("You can't\n");
+					part_2_user();
+				}
 			}
 			case 2:
 			{
-				deletingBook("book.csv");
-				break;				
+				if (Users[check].ADbook == 1)
+				{	
+					deletingBook("book.csv");
+					break;
+				}
+				else
+				{
+					printf("You can't\n");
+					part_2_user();
+				}				
 			}
 			case 3:
 			{
@@ -134,7 +157,8 @@ void part_1_student()
 	else
 	{
 		int x;
-		printf("MENU:");
+		printf("MENU STUDENT:");
+		printf("\n0) Main Menu");
 		printf("\n1) Add");
 		printf("\n2) Delete");
 		printf("\n3) Edit");
@@ -146,15 +170,36 @@ void part_1_student()
 		fflush(stdin);
 		switch(x)
 		{
+			case 0:
+			{
+				part_2_user();
+				break;
+			}
 			case 1:
 			{
-				addingNewStudent("student.csv");
-				break;
+				if (Users[check].ADstudent == 1)
+				{	
+					addingNewStudent("student.csv");
+					break;
+				}
+				else
+				{
+					printf("You can't\n");
+					part_2_user();
+				}
 			}
 			case 2:
 			{
-				deletingStudent("student.csv");
-				break;				
+				if (Users[check].ADstudent == 1)
+				{	
+					deletingStudent("student.csv");
+					break;
+				}
+				else
+				{
+					printf("You can't\n");
+					part_2_user();
+				}				
 			}
 			case 3:
 			{
@@ -163,8 +208,16 @@ void part_1_student()
 			}
 			case 4:
 			{
-				editingStudent("student.csv");
-				break;
+				if (Users[check].ADstudent == 1)
+				{	
+					editingStudent("student.csv");
+					break;
+				}
+				else
+				{
+					printf("You can't\n");
+					part_2_user();
+				}
 			}
 			case 5:
 			{
@@ -177,36 +230,41 @@ void part_1_student()
 
 void part_2_user()
 {
-	int n = readUser("user.csv");
-	if (n == -1)
+	if (check != -1)
 	{
-		printf("ERROR #1: empty file");
-	}
-	else
-	{
-		int x;
-		printf("MENU:");
-		printf("\n1) Book");
-		printf("\n2) Student");
-		
-		printf("\nYou want:");
-		scanf("%d", &x);
-		fflush(stdin);
-		switch(x)
+		int n = readUser("user.csv");
+		if (n == -1)
 		{
-			case 1:
+			printf("ERROR #1: empty file");
+		}
+		else
+		{
+			int x;
+			printf("MENU:");
+			printf("\n1) Book");
+			printf("\n2) Student");
+		
+			printf("\nYou want:");
+			scanf("%d", &x);
+			fflush(stdin);
+			switch(x)
 			{
-				part_1_book();
-				break;
+				case 1:
+				{
+					part_1_book();
+					break;
+				}
+				case 2:
+				{
+					part_1_student();
+					break;				
+				}
+				default:;
 			}
-			case 2:
-			{
-				part_1_student();
-				break;				
-			}
-			default:;
 		}
 	}
+	else
+		printf("WRONG");
 }
 
 int readBook(const char *filename)
@@ -356,23 +414,6 @@ void sortingBook(const char *filename)
 		printf("%s | %s | %s | %d | %d\n", Books[i].ISBN, Books[i].Author, Books[i].Title, Books[i].All, Books[i].Free);
 }
 
-int readUser(const char *filename)
-{
-	FILE *fs = fopen(filename, "r+");
-	if(!fs)
-		return -1;
-	
-	//Read file
-	rewind(fs);
-	char tmp[__MAX_SIZE];
-	int total = 0;
-	while (fgets(tmp, __MAX_SIZE, fs))
-	{
-		fscanf(fs, "%[^,], %[^,], %d , %d", Users[total].Username, Users[total].Password, &Users[total].ADbook, &Users[total].ADstudent);
-		total++;
-	}
-	return total;
-}
 
 //Student File
 int readStudent(const char *filename)
@@ -519,4 +560,52 @@ void searchingStudent(const char *filename)
 		printf("%s, %s, %s, %s, %s, %s\n", Students[n].ID, Students[n].FamilyName, Students[n].Name, Students[n].FatherName, Students[n].Faculty, Students[n].Specialist);
 		fclose(fs);
 	}
+}
+
+int readUser(const char *filename)
+{
+	FILE *fs = fopen(filename, "r+");
+	if(!fs)
+		return -1;
+	
+	//Read file
+	rewind(fs);
+	char tmp[__MAX_SIZE];
+	int total = 0;
+	while (fgets(tmp, __MAX_SIZE, fs))
+	{
+		fscanf(fs, "%[^,], %[^,], %d , %d", Users[total].Username, Users[total].Password, &Users[total].ADbook, &Users[total].ADstudent);
+		total++;
+	}
+	return total;
+}
+
+//Check
+int checkUser(const char *filename)
+{
+	FILE * fs = fopen(filename, "r");
+	char login[__MAX_SIZE];
+	char password[__MAX_SIZE];
+	
+	printf("Login:");
+	gets(login);
+	
+	printf("Password:");
+	gets(password);
+	
+	rewind(fs);
+	int n = readUser("user.csv");
+	int i;
+	int tp;
+	for (i = 0; i < n; i++)
+	{
+		if (strcmp(login, Users[i].Username) == 0 && strcmp(password, Users[i].Password) == 0)
+		{
+			tp = i;
+		}
+	}
+	if (tp >= 0 && tp < n)
+		return tp;
+	else
+		return -1;
 }
